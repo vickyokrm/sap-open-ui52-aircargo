@@ -20,7 +20,7 @@ sap.ui.define([
 			actions : {
 
 				iSortTheListOnName : function () {
-					return this.iChooseASorter("sortButton", "Sort By <CustomerName>");
+					return this.iChooseASorter("sortButton", "Sort By Customer");
 				},
 				iSortTheListOnUnitNumber : function () {
 					return this.iChooseASorter("sortButton", "Sort By <NetAmount>");
@@ -299,7 +299,7 @@ sap.ui.define([
 						viewName : sViewName,
 						id: "masterPageTitle",
 						autoWait: false,
-						matchers: new PropertyStrictEquals({name : "text", value : "<SalesOrderSet> (0)"}),
+						matchers: new PropertyStrictEquals({name : "text", value : "Orders (0)"}),
 						success: function () {
 							Opa5.assert.ok(true, "The list header displays zero hits");
 						},
@@ -455,7 +455,7 @@ sap.ui.define([
 							this.waitFor({
 								id : "masterPageTitle",
 								viewName : sViewName,
-								matchers : new PropertyStrictEquals({name : "text", value : "<SalesOrderSet> (" + iExpectedLength + ")"}),
+								matchers : new PropertyStrictEquals({name : "text", value : "Orders (" + iExpectedLength + ")"}),
 								success : function () {
 									Opa5.assert.ok(true, "The master page header displays " + iExpectedLength + " items");
 								},
