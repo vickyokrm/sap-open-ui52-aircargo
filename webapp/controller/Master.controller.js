@@ -12,7 +12,7 @@ sap.ui.define([
 ], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, formatter) {
 	"use strict";
 
-	return BaseController.extend("opensap.orders.Orders.controller.Master", {
+	return BaseController.extend("opensap.orders.controller.Master", {
 
 		formatter: formatter,
 
