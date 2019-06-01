@@ -73,8 +73,7 @@
 					"headers": {
 						"Authorization": "Basic UDIwMDEzMjIzNDM6UGFzc3dvcmQxMjM0"
 					},
-					"metadataUrlParams": {
-					}
+					"metadataUrlParams": {}
 				},
 				"preload": true
 			}
@@ -104,6 +103,15 @@
 						"master",
 						"object"
 					]
+				},
+				{
+					"pattern": "SalesOrderSet/{objectId}/Item/{itemPosition}",
+					"name": "Info",
+					"target": [
+						"master",
+						"object",
+						"Info"
+					]
 				}
 			],
 			"targets": {
@@ -126,6 +134,12 @@
 				"notFound": {
 					"viewName": "NotFound",
 					"viewId": "notFound"
+				},
+				"Info": {
+					"viewType": "XML",
+					"viewName": "Info",
+					"controlAggregation": "endColumnPages",
+					"viewId": "Info"
 				}
 			}
 		}
