@@ -106,11 +106,20 @@
 				},
 				{
 					"pattern": "SalesOrderSet/{objectId}/Item/{itemPosition}",
-					"name": "Info",
+					"name": "info",
 					"target": [
 						"master",
 						"object",
-						"Info"
+						"info"
+					]
+				},
+				{
+					"pattern": "SalesOrderSet/{objectId}/create",
+					"name": "create",
+					"target": [
+						"master",
+						"object",
+						"info"
 					]
 				}
 			],
@@ -135,11 +144,17 @@
 					"viewName": "NotFound",
 					"viewId": "notFound"
 				},
-				"Info": {
+				"info": {
 					"viewType": "XML",
 					"viewName": "Info",
 					"controlAggregation": "endColumnPages",
-					"viewId": "Info"
+					"viewId": "info"
+				},
+				"create": {
+					"viewType": "XML",
+					"viewName": "Create",
+					"controlAggregation": "endColumnPages",
+					"viewId": "create"
 				}
 			}
 		}

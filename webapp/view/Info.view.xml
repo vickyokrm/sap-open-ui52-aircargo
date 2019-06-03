@@ -77,7 +77,6 @@
 					<Label text="{i18n>infoItemDescriptionLanguage}"/>
 					<Text text="{ToHeader/NoteLanguage}"/>
 				</l:VerticalLayout>
-
 			</FlexBox>
 		</uxap:headerContent>
 

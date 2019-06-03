@@ -18,12 +18,12 @@
 		</semantic:titleHeading>
 		<semantic:headerContent>
 			<ObjectAttribute title="{i18n>StatusDesc}"/>
-			<tnt:InfoLabel
+<!--  			<tnt:InfoLabel
 				text="{LifecycleStatusDescription}"
 				colorScheme="{
 					path: 'LifecycleStatus',
 					formatter: '.formatter.deliveryStatus'
-				}"/>
+				}"/> -->
 		</semantic:headerContent>
 		<semantic:content>
 			<l:VerticalLayout>
@@ -48,6 +48,11 @@
 								id="lineItemsTitle"
 								text="{detailView>/lineItemListTitle}"
 								titleStyle="H3"/>
+								<ToolbarSpacer />
+								<Button
+								icon = "sap-icon://add"
+								tooltip="{i18n>createButtonTooltip}"
+								press=".onCreate"/>
 						</Toolbar>
 					</headerToolbar>
 					<columns>
@@ -89,7 +94,7 @@
 										style: 'medium'
 									}
 								}"/>
-								<si:StatusIndicator
+		<!-- 							<si:StatusIndicator
 									id="statusIndicator"
 									width="4.5rem"
 									height="3.5rem"
@@ -103,7 +108,7 @@
 										<si:PropertyThreshold fillColor="Neutral" toValue="80"/>
 										<si:PropertyThreshold fillColor="Good" toValue="100"/>
 									</si:propertyThresholds>
-								</si:StatusIndicator>
+								</si:StatusIndicator> -->
 								<ObjectNumber
 									number="{
 										path: 'NetAmount',
