@@ -3,7 +3,7 @@ sap.ui.define([
 ], function(Opa5) {
 	"use strict";
 
-	return Opa5.extend("opensap.orders.Orders.test.integration.pages.Common", {
+	return Opa5.extend("opensap.orders.test.integration.pages.Common", {
 
 		createAWaitForAnEntitySet : function  (oOptions) {
 			return {
