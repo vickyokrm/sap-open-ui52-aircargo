@@ -1,7 +1,7 @@
 {
 	"_version": "1.12.0",
 	"sap.app": {
-		"id": "opensap.orders.Orders",
+		"id": "opensap.orders",
 		"type": "application",
 		"i18n": "i18n/i18n.properties",
 		"title": "{{appTitle}}",
@@ -43,7 +43,7 @@
 	},
 	"sap.ui5": {
 		"rootView": {
-			"viewName": "opensap.orders.Orders.view.App",
+			"viewName": "opensap.orders.view.App",
 			"type": "XML",
 			"async": true,
 			"id": "app"
@@ -64,7 +64,7 @@
 			"i18n": {
 				"type": "sap.ui.model.resource.ResourceModel",
 				"settings": {
-					"bundleName": "opensap.orders.Orders.i18n.i18n"
+					"bundleName": "opensap.orders.i18n.i18n"
 				}
 			},
 			"": {
@@ -73,8 +73,7 @@
 					"headers": {
 						"Authorization": "Basic UDIwMDEzMjIzNDM6UGFzc3dvcmQxMjM0"
 					},
-					"metadataUrlParams": {
-					}
+					"metadataUrlParams": {}
 				},
 				"preload": true
 			}
@@ -83,7 +82,7 @@
 			"config": {
 				"routerClass": "sap.f.routing.Router",
 				"viewType": "XML",
-				"viewPath": "opensap.orders.Orders.view",
+				"viewPath": "opensap.orders.view",
 				"controlId": "layout",
 				"controlAggregation": "beginColumnPages",
 				"bypassed": {
@@ -103,6 +102,24 @@
 					"target": [
 						"master",
 						"object"
+					]
+				},
+				{
+					"pattern": "SalesOrderSet/{objectId}/Item/{itemPosition}",
+					"name": "info",
+					"target": [
+						"master",
+						"object",
+						"info"
+					]
+				},
+				{
+					"pattern": "SalesOrderSet/{objectId}/create",
+					"name": "create",
+					"target": [
+						"master",
+						"object",
+						"info"
 					]
 				}
 			],
@@ -126,6 +143,18 @@
 				"notFound": {
 					"viewName": "NotFound",
 					"viewId": "notFound"
+				},
+				"info": {
+					"viewType": "XML",
+					"viewName": "Info",
+					"controlAggregation": "endColumnPages",
+					"viewId": "info"
+				},
+				"create": {
+					"viewType": "XML",
+					"viewName": "Create",
+					"controlAggregation": "endColumnPages",
+					"viewId": "create"
 				}
 			}
 		}
