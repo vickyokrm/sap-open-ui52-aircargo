@@ -1,15 +1,18 @@
+/*global location */
 sap.ui.define([
 	"./BaseController",
 	"sap/ui/model/json/JSONModel",
 	"../model/formatter",
-	"sap/m/library"
-], function (BaseController, JSONModel, formatter, mobileLibrary) {
+	"sap/m/library",
+	"sap/ui/Device",
+	"sap/m/MessageToast"
+], function (BaseController, JSONModel, formatter, mobileLibrary, Device, MessageToast) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
 	var URLHelper = mobileLibrary.URLHelper;
 
-	return BaseController.extend("opensap.orders.Orders.controller.Detail", {
+	return BaseController.extend("opensap.orders.controller.Detail", {
 
 		formatter: formatter,
 
@@ -17,32 +20,42 @@ sap.ui.define([
 		/* lifecycle methods                                           */
 		/* =========================================================== */
 
-		onInit : function () {
+		onInit: function () {
 			// Model used to manipulate control states. The chosen values make sure,
 			// detail page is busy indication immediately so there is no break in
 			// between the busy indication for loading the view's meta data
 			var oViewModel = new JSONModel({
-				busy : false,
-				delay : 0,
-				lineItemListTitle : this.getResourceBundle().getText("detailLineItemTableHeading")
+				busy: false,
+				delay: 0,
+				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading")
 			});
 
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
+			this.getRouter().getRoute("info").attachPatternMatched(this._onObjectMatched, this);
+			this.getRouter().getRoute("create").attachPatternMatched(this._onObjectMatched, this);
 
 			this.setModel(oViewModel, "detailView");
 
 			this.getOwnerComponent().getModel().metadataLoaded().then(this._onMetadataLoaded.bind(this));
 		},
-
 		/* =========================================================== */
 		/* event handlers                                              */
 		/* =========================================================== */
-
+		/**
+		 * Event handler when create item button is clicked
+		 * @public
+		 */
+		onCreate: function (oEvent) {
+			var bReplace = !Device.system.phone;
+			this.getRouter().navTo("create", {
+				objectId: oEvent.getSource().getBindingContext().getProperty("SalesOrderID")
+			}, bReplace);
+		},
 		/**
 		 * Event handler when the share by E-Mail button has been clicked
 		 * @public
 		 */
-		onSendEmailPress : function () {
+		onSendEmailPress: function () {
 			var oViewModel = this.getModel("detailView");
 
 			URLHelper.triggerEmail(
@@ -58,7 +71,7 @@ sap.ui.define([
 		 * @param {object} oEvent an event containing the total number of items in the list
 		 * @private
 		 */
-		onListUpdateFinished : function (oEvent) {
+		onListUpdateFinished: function (oEvent) {
 			var sTitle,
 				iTotalItems = oEvent.getParameter("total"),
 				oViewModel = this.getModel("detailView");
@@ -85,12 +98,19 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent pattern match event in route 'object'
 		 * @private
 		 */
-		_onObjectMatched : function (oEvent) {
-			var sObjectId =  oEvent.getParameter("arguments").objectId;
-			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
-			this.getModel().metadataLoaded().then( function() {
+		_onObjectMatched: function (oEvent) {
+			var sObjectId = oEvent.getParameter("arguments").objectId;
+
+			if (!sObjectId) {
+				return;
+			}
+			if (oEvent.getParameter("name") === "object") {
+				this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
+			}
+
+			this.getModel().metadataLoaded().then(function () {
 				var sObjectPath = this.getModel().createKey("SalesOrderSet", {
-					SalesOrderID :  sObjectId
+					SalesOrderID: sObjectId
 				});
 				this._bindView("/" + sObjectPath);
 			}.bind(this));
@@ -103,7 +123,7 @@ sap.ui.define([
 		 * @param {string} sObjectPath path to the object to be bound to the view.
 		 * @private
 		 */
-		_bindView : function (sObjectPath) {
+		_bindView: function (sObjectPath) {
 			// Set busy indicator during view binding
 			var oViewModel = this.getModel("detailView");
 
@@ -111,10 +131,10 @@ sap.ui.define([
 			oViewModel.setProperty("/busy", false);
 
 			this.getView().bindElement({
-				path : sObjectPath,
+				path: sObjectPath,
 				events: {
-					change : this._onBindingChange.bind(this),
-					dataRequested : function () {
+					change: this._onBindingChange.bind(this),
+					dataRequested: function () {
 						oViewModel.setProperty("/busy", true);
 					},
 					dataReceived: function () {
@@ -122,9 +142,10 @@ sap.ui.define([
 					}
 				}
 			});
+			this.byId("orderPreparations").reset();
 		},
 
-		_onBindingChange : function () {
+		_onBindingChange: function () {
 			var oView = this.getView(),
 				oElementBinding = oView.getElementBinding();
 
@@ -152,7 +173,7 @@ sap.ui.define([
 				oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
 		},
 
-		_onMetadataLoaded : function () {
+		_onMetadataLoaded: function () {
 			// Store original busy indicator delay for the detail view
 			var iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
 				oViewModel = this.getModel("detailView"),
@@ -164,7 +185,7 @@ sap.ui.define([
 			oViewModel.setProperty("/delay", 0);
 			oViewModel.setProperty("/lineItemTableDelay", 0);
 
-			oLineItemTable.attachEventOnce("updateFinished", function() {
+			oLineItemTable.attachEventOnce("updateFinished", function () {
 				// Restore original busy indicator delay for line item table
 				oViewModel.setProperty("/lineItemTableDelay", iOriginalLineItemTableBusyDelay);
 			});
@@ -180,6 +201,7 @@ sap.ui.define([
 		 */
 		onCloseDetailPress: function () {
 			this.getModel("appView").setProperty("/actionButtonsInfo/midColumn/fullScreen", false);
+			this.byId("lineItemsList").removeSelections(true);
 			// No item should be selected on master after detail page is closed
 			this.getOwnerComponent().oListSelector.clearMasterListSelection();
 			this.getRouter().navTo("master");
@@ -197,8 +219,25 @@ sap.ui.define([
 				this.getModel("appView").setProperty("/layout", "MidColumnFullScreen");
 			} else {
 				// reset to previous layout
-				this.getModel("appView").setProperty("/layout",  this.getModel("appView").getProperty("/previousLayout"));
+				this.getModel("appView").setProperty("/layout", this.getModel("appView").getProperty("/previousLayout"));
 			}
+		},
+
+		/**
+		 * @param {sap.ui.base.Event} oEvent pattern match event in route 'object'
+		 */
+		action: function (oEvent) {
+			var bReplace = !Device.system.phone;
+			this.getRouter().navTo("Info", {
+				objectId: (oEvent.getParameter("listItem") || oEvent.getSource()).getBindingContext().getProperty("SalesOrderID"),
+				itemPosition: (oEvent.getParameter("listItem") || oEvent.getSource()).getBindingContext().getProperty("ItemPosition")
+			}, bReplace);
+		},
+
+		onConfirm: function (oEvent) {
+			var oBinding = oEvent.getSource().getBindingContext().getObject();
+			var oMessage = this.getResourceBundle().getText("OrderPreparationMessage", [oBinding.CustomerID, oBinding.CustomerName]);
+			MessageToast.show(oMessage);
 		}
 	});
 
